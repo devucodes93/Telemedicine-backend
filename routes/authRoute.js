@@ -41,6 +41,8 @@ router.get("/me", isAuthenticated, (req, res) => {
       username: req.user.username,
       email: req.user.email,
       avatar: req.user.avatar || null,
+      phoneNumber: req.user.phoneNumber,
+      role: req.user.role,
     },
   });
 });
