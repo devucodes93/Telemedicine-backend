@@ -11,7 +11,7 @@ import patientRoutes from "./routes/patient.js";
 import doctorRoutes from "./routes/doctor.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
 import passport from "passport";
-import { server, app } from "../lib/socket.js";
+import { server, app } from "./lib/socket.js";
 
 // Middleware
 app.use(
