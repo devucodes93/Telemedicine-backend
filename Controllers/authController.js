@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import dotenv from "dotenv";
+import { loginEmail, sendEmail } from "../seed.js";
 dotenv.config();
 
 cloudinary.config({
@@ -60,7 +61,6 @@ export const register = async (req, res) => {
     });
     await newUser.save();
 
-
     res.status(201).json({
       msg: "User created successfully",
       user: {
@@ -94,6 +94,9 @@ export const login = async (req, res) => {
       return res
         .status(400)
         .json({ msg: "Invalid Email or Password", success: false });
+  
+    const mail = loginEmail(user);
+    await sendEmail({ to: user.email, subject: mail.subject, text: mail.text });
 
     res.status(200).json({
       msg: "Login successful",

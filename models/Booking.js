@@ -40,6 +40,10 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    doctorCameOnline: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

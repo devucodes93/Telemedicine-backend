@@ -86,6 +86,7 @@ router.get("/booking", async (req, res) => {
           : null,
         doctorId: booking.doctorId,
         fee: booking.fee,
+        doctorCameOnline: booking.doctorCameOnline,
         date: booking.date,
         status: booking.status,
         time: booking.time,
@@ -185,6 +186,46 @@ router.post("/cancel/:id", async (req, res) => {
       .json({ msg: "Error cancelling appointment", error: err.message });
   }
 });
+
+router.post("/doctor-live", async (req, res) => {
+  try {
+    const { bookingId, status, doctorId } = req.body;
+    if (!bookingId || !doctorId) {
+      return res.status(400).json({ msg: "Missing bookingId" });
+    }
+    //setting wether doctor came online or not
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ msg: "Booking not found" });
+    }
+    booking.doctorCameOnline = status;
+    await booking.save();
+    res.json({ msg: "Doctor live status updated", booking });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ msg: "Error updating doctor live status", error: err.message });
+  }
+});
+
+router.get("/check-online", async (req, res) => {
+  try {
+    const { bookingId } = req.query;
+    if (!bookingId) {
+      return res.status(400).json({ msg: "Missing bookingId" });
+    }
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ msg: "Booking not found" });
+    }
+    res.json({ doctorCameOnline: booking.doctorCameOnline });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ msg: "Error checking doctor online status", error: err.message });
+  }
+});
+//
 
 export default router;
 // GET /doctor/match-count?bookingId=... - find all bookings matching doctor userId from bookingId
