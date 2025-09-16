@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String },
   isLoggedIn: { type: Boolean, default: false },
   isVerified: { type: Boolean, default: false },
+  certification: { type: String, default: "" },
+  fee: { type: Number, default: 0 },
+  experience: { type: Number, default: 0 },
+  specialization: { type: String, default: "" },
 });
 
 export default mongoose.model("GoogleUser", userSchema);

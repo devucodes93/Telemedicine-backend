@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import dotenv from "dotenv";
 import { loginEmail, sendEmail } from "../seed.js";
+import DoctorRequest from "../models/DoctorRequest.js";
 dotenv.config();
 
 cloudinary.config({
@@ -20,12 +21,18 @@ const generateToken = (id, role) =>
 export const register = async (req, res) => {
   try {
     console.log(req.body);
-    const { username, email, password, phoneNumber, role, avatar } = req.body;
+    const { username, email, password, phoneNumber, role } = req.body;
 
     if (!username || !email || !phoneNumber || !password)
       return res.json({ msg: "All fields are Required", success: false });
 
-    // check file exists
+    // If registering as doctor, forward to doctorApply
+    if (role && role.toLowerCase() === "doctor") {
+      // Forward request to doctorApply controller
+      return await exports.doctorApply(req, res);
+    }
+
+    // Patient flow (unchanged)
     if (!req.file) {
       return res.json({ msg: "Image file is required", success: false });
     }
@@ -94,7 +101,7 @@ export const login = async (req, res) => {
       return res
         .status(400)
         .json({ msg: "Invalid Email or Password", success: false });
-  
+
     const mail = loginEmail(user);
     await sendEmail({ to: user.email, subject: mail.subject, text: mail.text });
 
@@ -113,5 +120,97 @@ export const login = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ msg: "Login failed", error: err.message });
+  }
+};
+
+export const doctorApply = async (req, res) => {
+  try {
+    console.log(req.body);
+
+    const {
+      username,
+      email,
+      password,
+      phoneNumber,
+      role,
+      experience,
+      specialization,
+      avatar,
+      certification,
+    } = req.body;
+
+    // Validate required fields
+    if (!username || !email || !phoneNumber || !password)
+      return res.json({ msg: "All fields are required", success: false });
+
+    // Check for uploaded files
+
+    // Check for existing user
+    const existingUser = await DoctorRequest.findOne({
+      $or: [{ email }, { phoneNumber }],
+    });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ msg: "User already exists", success: false });
+    }
+
+    // we are sending base64 strings for images from frontend
+    if (!avatar || !certification) {
+      return res
+        .status(400)
+        .json({ msg: "Avatar and certification are required", success: false });
+    }
+    // Upload avatar to Cloudinary
+    const avatarUpload = await cloudinary.uploader.upload(avatar, {
+      folder: "doctors/avatar",
+    });
+    const certificationUpload = await cloudinary.uploader.upload(
+      certification,
+      {
+        folder: "doctors/certification",
+      }
+    );
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save to DB
+    const newDoctorRequest = new DoctorRequest({
+      name: username.trim(),
+      email: email.trim(),
+      password: hashedPassword,
+      phone: phoneNumber.trim(),
+      avatar: avatarUpload.secure_url,
+      role: "Doctor",
+      specialization: specialization ? specialization.trim() : "",
+      experience: experience ? Number(experience) : 0,
+      fee: req.body.fee ? Number(req.body.fee) : 0,
+      certification: certificationUpload.secure_url,
+      isApproved: 'No',
+    });
+
+    await newDoctorRequest.save();
+
+    res.status(201).json({
+      msg: "Doctor application sent successfully",
+      doctorRequest: {
+        id: newDoctorRequest._id,
+        username: newDoctorRequest.username,
+
+        email: newDoctorRequest.email,
+        role: newDoctorRequest.role,
+        phoneNumber: newDoctorRequest.phoneNumber,
+        avatar: newDoctorRequest.avatar,
+        certification: newDoctorRequest.certification,
+        experience: newDoctorRequest.experience,
+        specialization: newDoctorRequest.specialization,
+      },
+      success: true,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 };
