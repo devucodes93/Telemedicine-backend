@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const doctorSchema = new mongoose.Schema(
+const doctorRequestSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, default: "" },
     email: { type: String, required: true, unique: true, default: "" },
@@ -9,10 +9,11 @@ const doctorSchema = new mongoose.Schema(
     phone: { type: String, required: true, default: "" },
     experience: { type: Number, required: true, default: 0 },
     fee: { type: Number, required: true, default: 0 },
+    avatar: { type: String, default: "" },
     certification: { type: String, required: true, default: "" },
-    
+    isApproved: { type: String, default: "No" },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Doctor", doctorSchema);
+export default mongoose.model("DoctorRequest", doctorRequestSchema);
