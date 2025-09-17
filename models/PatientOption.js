@@ -23,6 +23,18 @@ const PatientOptionSchema = new mongoose.Schema(
       ],
       default: "General Health Conditions",
     },
+    doctorLocation: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        latitude: { type: Number },
+        longitude: { type: Number },
+      },
+    },
+    emergencyCode: { type: String, default: "" },
   },
   { timestamps: true }
 );

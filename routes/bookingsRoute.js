@@ -190,7 +190,7 @@ router.post("/cancel/:id", async (req, res) => {
 router.post("/doctor-live", async (req, res) => {
   try {
     const { bookingId, status, doctorId } = req.body;
-    if (!bookingId || !doctorId) {
+    if (!bookingId) {
       return res.status(400).json({ msg: "Missing bookingId" });
     }
     //setting wether doctor came online or not

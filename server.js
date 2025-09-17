@@ -10,14 +10,14 @@ import googleRoute from "./routes/authRoute.js";
 import patientRoutes from "./routes/patient.js";
 import doctorRoutes from "./routes/doctor.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
-import patientOption from "./routes/patientOption.js"
+import patientOption from "./routes/patientOption.js";
 import passport from "passport";
 import { server, app } from "./lib/socket.js";
 
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     credentials: true,
   })
 );
@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/booking", bookingsRoute);
-app.use("/api",patientOption);
+app.use("/api", patientOption);
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
