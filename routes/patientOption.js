@@ -57,6 +57,7 @@ router.get("/emergencies", async (req, res) => {
     const patientId = emergencies.patientId;
     const doctorId = emergencies.doctorId;
     console.log(doctorId);
+    emergencies = await PatientOption.findOne({ emergencyCode: code });
     await emergencies
       .populate("patientId", "-password -__v -role")
       .populate("doctorId", "-password -__v -role");
