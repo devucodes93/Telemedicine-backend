@@ -47,7 +47,7 @@ router.get("/emergencies", async (req, res) => {
   console.log(code);
 
   try {
-    const emergencies = await PatientOption.findOne({ emergencyCode: code });
+    let emergencies = await PatientOption.findOne({ emergencyCode: code });
 
     //find doctor and patient details
     if (!emergencies) {
