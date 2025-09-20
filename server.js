@@ -33,7 +33,7 @@ app.use("/api/doctor", doctorRoutes);
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "script-src 'self' http://localhost:5173 'wasm-unsafe-eval' 'inline-speculation-rules' chrome-extension://20a9100a-7b1d-4459-8f51-61a8fbc3b3c1/"
+    "script-src 'self' http://localhost:5173 https://telemedicine-frontend-one.vercel.app/ 'wasm-unsafe-eval' 'inline-speculation-rules' chrome-extension://20a9100a-7b1d-4459-8f51-61a8fbc3b3c1/"
   );
   next();
 });

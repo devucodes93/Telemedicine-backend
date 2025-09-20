@@ -4,12 +4,12 @@ const PatientOptionSchema = new mongoose.Schema(
   {
     patientId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Patient",
+      ref: "GoogleUser",
       required: true,
     },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: "GoogleUser",
       default: null,
     },
     latitude: { type: Number },
