@@ -47,26 +47,19 @@ router.get("/emergencies", async (req, res) => {
   console.log(code);
 
   try {
-    let emergencies = await PatientOption.findOne({ emergencyCode: code });
+    const emergencies = await PatientOption.findOne({ emergencyCode: code })
+      .populate("patientId", "-password -__v -role")
+      .populate("doctorId", "-password -__v -role");
 
-    //find doctor and patient details
     if (!emergencies) {
       return res.status(404).json({ message: "Emergency not found" });
     }
-
-    const patientId = emergencies.patientId;
-    const doctorId = emergencies.doctorId;
-    console.log(doctorId);
-    emergencies = await PatientOption.findOne({ emergencyCode: code });
-    await emergencies
-      .populate("patientId", "-password -__v -role")
-      .populate("doctorId", "-password -__v -role");
-    console.log(emergencies);
 
     res.json({ emergencies });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
 
 export default router;
