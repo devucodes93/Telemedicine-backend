@@ -66,28 +66,32 @@ router.post("/doctor-application-response", async (req, res) => {
         .status(400)
         .json({ message: "Application ID and action are required." });
     }
+
     const application = await DoctorRequest.findById(applicationId);
     if (!application) {
       return res.status(404).json({ message: "Application not found." });
     }
+    console.log(application)
     application.isApproved = action === "approve" ? "Yes" : "Rejected";
     await application.save();
     if (action === "approve") {
-      const newDoctor = new Doctor({
-        username: application.name,
-        email: application.email,
-        password: application.password,
-        phone: application.phone,
-        specialization: application.specialization,
-        experience: application.experience,
-        fee: application.fee,
-        isLoggedIn: false,
-        isVerified: true,
-        avatar: application.avatar,
-        certification: application.certification,
-        role: "Doctor",
-      });
-      await newDoctor.save();
+     const newDoctor = new Doctor({
+  username: application.name,   // 👈 correct field
+  email: application.email,
+  password: application.password,
+  phone: application.phone,
+  specialization: application.specialization,
+  experience: application.experience,
+  fee: application.fee,
+  isLoggedIn: false,
+  isVerified: true,
+  avatar: application.avatar,
+  certification: application.certification,
+  role: "Doctor",
+});
+// await newDoctor.save();
+
+      
       const newUser = new User({
         userName: application.name,
         email: application.email,
